@@ -56,8 +56,8 @@ CREATE TABLE IF NOT EXISTS attendance (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id uuid NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
   subject_id uuid NOT NULL REFERENCES subjects(id),
-  date date NOT NULL,
-  present boolean NOT NULL,
+  total_days integer NOT NULL,
+  present_days integer NOT NULL,
   created_at timestamptz DEFAULT now() NOT NULL
 );
 

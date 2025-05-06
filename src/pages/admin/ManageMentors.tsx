@@ -239,6 +239,14 @@ const ManageMentors: React.FC = () => {
           id: `temp-${Date.now()}`,
           created_at: new Date().toISOString(),
         };
+
+        const { data, error } = await supabase.functions.invoke('hello-world', {
+          body: { name: 'Functions' },
+        })
+
+        if (error) throw error;
+        console.log('Function response:', data);
+        toast.success('Mentor added successfully');
         
         setMentors([...mentors, newMentor]);
       }

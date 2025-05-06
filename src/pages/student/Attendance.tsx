@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle } from '../../components/ui/Card';
-import { Calendar, CheckCircle, XCircle } from 'lucide-react';
-import { format } from 'date-fns';
+import { Calendar } from 'lucide-react';
 import { Subject } from '../../types';
 
 interface AttendanceRecord {
   id: string;
   date: string;
-  present: boolean;
+  present_days: number;
+  total_days: number;
   subject: Subject;
 }
 
@@ -53,14 +53,15 @@ const StudentAttendance: React.FC = () => {
   }, [currentUser]);
 
   const calculateAttendanceStats = () => {
-    const total = attendance.length;
-    const present = attendance.filter(record => record.present).length;
-    const percentage = total > 0 ? (present / total) * 100 : 0;
-    
+    const totalPresent = attendance.reduce((sum, record) => sum + record.present_days, 0);
+    const totalPossible = attendance.reduce((sum, record) => sum + record.total_days, 0);
+    const totalAbsent = totalPossible - totalPresent;
+    const percentage = totalPossible > 0 ? (totalPresent / totalPossible) * 100 : 0;
+
     return {
-      total,
-      present,
-      absent: total - present,
+      total: totalPossible,
+      present: totalPresent,
+      absent: totalAbsent,
       percentage: Math.round(percentage),
     };
   };
@@ -88,7 +89,7 @@ const StudentAttendance: React.FC = () => {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-medium">Total Classes</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Possible Days</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{stats.total}</div>
@@ -97,7 +98,7 @@ const StudentAttendance: React.FC = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-medium">Present</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Present Days</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-success">{stats.present}</div>
@@ -106,7 +107,7 @@ const StudentAttendance: React.FC = () => {
 
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm font-medium">Absent</CardTitle>
+            <CardTitle className="text-sm font-medium">Total Absent Days</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-destructive">{stats.absent}</div>
@@ -136,29 +137,20 @@ const StudentAttendance: React.FC = () => {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-4">
-                        {record.present ? (
-                          <div className="bg-success/10 p-2 rounded-full">
-                            <CheckCircle className="h-5 w-5 text-success" />
-                          </div>
-                        ) : (
-                          <div className="bg-destructive/10 p-2 rounded-full">
-                            <XCircle className="h-5 w-5 text-destructive" />
-                          </div>
-                        )}
-                        
+                        <Calendar className="h-5 w-5 text-primary" />
                         <div>
                           <h3 className="font-medium">{record.subject.name}</h3>
                           <p className="text-sm text-muted-foreground">
-                            {record.subject.code}
+                            {record.subject.code} - Semester {record.subject.semester}
                           </p>
                         </div>
                       </div>
                       
-                      <div className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                        <span className="text-sm">
-                          {format(new Date(record.date), 'PP')}
+                      <div className="text-right">
+                        <span className="text-lg font-semibold">
+                          {record.present_days} / {record.total_days}
                         </span>
+                        <p className="text-sm text-muted-foreground">Days Attended</p>
                       </div>
                     </div>
                   </CardContent>

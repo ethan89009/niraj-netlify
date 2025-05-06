@@ -13,9 +13,10 @@ const Login: React.FC = () => {
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    
+    const emailRegex = /@aitdgoa\.edu\.in$/; 
+
     if (!email) newErrors.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Email is invalid';
+    else if (!emailRegex.test(email)) newErrors.email = 'Email is invalid';
     
     if (!password) newErrors.password = 'Password is required';
     else if (password.length < 6) newErrors.password = 'Password must be at least 6 characters';

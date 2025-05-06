@@ -14,7 +14,8 @@ export interface Database {
           created_at: string
           date: string
           id: string
-          present: boolean
+          present_days: number
+          total_days: number
           student_id: string
           subject_id: string
         }

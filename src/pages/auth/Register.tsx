@@ -24,12 +24,14 @@ const Register: React.FC = () => {
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    
+    const emailRegex = /@aitdgoa\.edu\.in$/; 
+    console.log(formData.email, emailRegex.test(formData.email));
     if (!formData.firstName) newErrors.firstName = 'First name is required';
     if (!formData.lastName) newErrors.lastName = 'Last name is required';
     
     if (!formData.email) newErrors.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email is invalid';
+    else if (!emailRegex.test(formData.email)) newErrors.email = 'Email is invalid';
+
     
     if (!formData.password) newErrors.password = 'Password is required';
     else if (formData.password.length < 6) newErrors.password = 'Password must be at least 6 characters';
@@ -39,6 +41,7 @@ const Register: React.FC = () => {
     }
     
     setErrors(newErrors);
+    console.log(Object.keys(newErrors).length === 0);
     return Object.keys(newErrors).length === 0;
   };
 
